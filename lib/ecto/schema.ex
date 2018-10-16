@@ -1406,24 +1406,32 @@ defmodule Ecto.Schema do
 
   @doc false
   def __timestamps__(:naive_datetime, :seconds) do
+    IO.puts("wtf1")
     NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
   end
   def __timestamps__(:naive_datetime, :microseconds) do
+    IO.puts("wtf2")
     NaiveDateTime.utc_now()
   end
   def __timestamps__(:utc_datetime, :seconds) do
+    IO.puts("wtf3")
     DateTime.utc_now() |> DateTime.truncate(:second)
   end
   def __timestamps__(:utc_datetime, :microseconds) do
+    IO.puts("wtf4")
     DateTime.utc_now()
   end
   def __timestamps__(type, :seconds) do
+    IO.puts("wtf5")
     type_to_module(type).from_unix!(System.system_time(:seconds) * 1000000, :microseconds)
   end
   def __timestamps__(type, :microseconds) do
+    IO.puts("wtf6")
     type_to_module(type).from_unix!(System.system_time(:microseconds), :microseconds)
   end
 
+  defp type_to_module(:naive_datetime), do: NaiveDateTime
+  defp type_to_module(:utc_datetime), do: DateTime
   defp type_to_module(other), do: other
 
   @doc false
@@ -1856,7 +1864,7 @@ defmodule Ecto.Schema do
   end
 
   defp check_options!(opts, valid, fun_arity) do
-    case Enum.find(opts, fn {k, _} -> not k in valid end) do
+    case Enum.find(opts, fn {k, _} -> k not in valid end) do
       {k, _} ->
         raise ArgumentError, "invalid option #{inspect k} for #{fun_arity}"
       nil ->
