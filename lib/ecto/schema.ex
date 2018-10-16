@@ -1406,10 +1406,16 @@ defmodule Ecto.Schema do
 
   @doc false
   def __timestamps__(:naive_datetime, :seconds) do
-    %{NaiveDateTime.utc_now() | microsecond: {0, 6}}
+    NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
   end
   def __timestamps__(:naive_datetime, :microseconds) do
     NaiveDateTime.utc_now()
+  end
+  def __timestamps__(:utc_datetime, :seconds) do
+    DateTime.utc_now() |> DateTime.truncate(:second)
+  end
+  def __timestamps__(:utc_datetime, :microseconds) do
+    DateTime.utc_now()
   end
   def __timestamps__(type, :seconds) do
     type_to_module(type).from_unix!(System.system_time(:seconds) * 1000000, :microseconds)
@@ -1418,8 +1424,6 @@ defmodule Ecto.Schema do
     type_to_module(type).from_unix!(System.system_time(:microseconds), :microseconds)
   end
 
-  defp type_to_module(:naive_datetime), do: NaiveDateTime
-  defp type_to_module(:utc_datetime), do: DateTime
   defp type_to_module(other), do: other
 
   @doc false
